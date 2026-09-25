@@ -17,7 +17,7 @@ plt.rcParams['image.cmap'] = 'gray'
 n_x = 12288     # 64 * 64 * 3
 n_h = 7
 n_y = 1
-layers_dims = (n_x, n_h, n_y)
+layers_dims = [12288, 64, 32, 16, 8, 1]
 
 
 # GRADED FUNCTION: two_layer_model
