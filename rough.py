@@ -13,27 +13,8 @@ plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
 
-np.random.seed(1)
-train_x_orig, train_y, test_x_orig, test_y, classes = load_data()
-
-# Explore your dataset 
-m_train = train_x_orig.shape[0]
-num_px = train_x_orig.shape[1]
-m_test = test_x_orig.shape[0]
-
-
-
-# Reshape the training and test examples 
-train_x_flatten = train_x_orig.reshape(train_x_orig.shape[0], -1).T   # The "-1" makes reshape flatten the remaining dimensions
-test_x_flatten = test_x_orig.reshape(test_x_orig.shape[0], -1).T
-
-# Standardize data to have feature values between 0 and 1.
-train_x = train_x_flatten/255.
-test_x = test_x_flatten/255.
-
-
 ### CONSTANTS DEFINING THE MODEL ####
-n_x = 12288     # num_px * num_px * 3
+n_x = 12288     # 64 * 64 * 3
 n_h = 7
 n_y = 1
 layers_dims = (n_x, n_h, n_y)
@@ -123,11 +104,12 @@ def two_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 
        
     # plot the cost
 
-    plt.plot(np.squeeze(costs))
-    plt.ylabel('cost')
-    plt.xlabel('iterations (per tens)')
-    plt.title("Learning rate =" + str(learning_rate))
-    plt.show()
+    if print_cost:
+        plt.plot(np.squeeze(costs))
+        plt.ylabel('cost')
+        plt.xlabel('iterations (per tens)')
+        plt.title("Learning rate =" + str(learning_rate))
+        plt.show()
     
     return parameters
 
@@ -190,16 +172,16 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
             costs.append(cost)
             
     # plot the cost
-    plt.plot(np.squeeze(costs))
-    plt.ylabel('cost')
-    plt.xlabel('iterations (per tens)')
-    plt.title("Learning rate =" + str(learning_rate))
-    plt.show()
+    if print_cost:
+        plt.plot(np.squeeze(costs))
+        plt.ylabel('cost')
+        plt.xlabel('iterations (per tens)')
+        plt.title("Learning rate =" + str(learning_rate))
+        plt.show()
     
     return parameters
 
 def train_model(num_iterations=2500, print_cost=False):
-    """Load the dataset and train the model once for reuse by the web app."""
     train_x_orig, train_y, _, _, classes = load_data()
     num_px = train_x_orig.shape[1]
     train_x = train_x_orig.reshape(train_x_orig.shape[0], -1).T / 255.0
@@ -213,23 +195,24 @@ def train_model(num_iterations=2500, print_cost=False):
     return parameters, classes, num_px
 
 
-def predict_image(image, parameters, classes, num_px):
-    """Prepare one RGB image and return its predicted class and confidence."""
-    rgb_image = image.convert("RGB")
-    resized_image = rgb_image.resize((num_px, num_px))
+def preprocess_image(image, num_px=64):
+    resized_image = image.convert("RGB").resize((num_px, num_px))
     image_array = np.asarray(resized_image, dtype=np.float64)
-    model_input = image_array.reshape((1, num_px * num_px * 3)).T / 255.0
+    return image_array.reshape((1, num_px * num_px * 3)).T / 255.0
+
+
+def predict_probabilities(image, parameters, classes, num_px=64):
+    model_input = preprocess_image(image, num_px)
     probabilities, _ = L_model_forward(model_input, parameters)
-    prediction = int(probabilities[0, 0] > 0.5)
-    confidence = float(probabilities[0, 0] if prediction else 1 - probabilities[0, 0])
-    label = classes[prediction].decode("utf-8")
-    return label, confidence, rgb_image
+    positive_probability = float(probabilities[0, 0])
+    values = (1.0 - positive_probability, positive_probability)
+    return {
+        classes[index].decode("utf-8"): values[index]
+        for index in range(len(classes))
+    }
 
 
 if __name__ == "__main__":
     parameters, classes, num_px = train_model(print_cost=True)
     image = Image.open(BASE_DIR / "images" / "cow.jpg")
-    label, confidence, image = predict_image(image, parameters, classes, num_px)
-    plt.imshow(image)
-    plt.show()
-    print(f"Prediction: {label} ({confidence:.1%} confidence)")
+    print(predict_probabilities(image, parameters, classes, num_px))

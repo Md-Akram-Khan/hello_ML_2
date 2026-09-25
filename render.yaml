@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: dnn-image-classifier-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend:app
+    healthCheckPath: /health
