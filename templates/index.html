@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wildlife Vision</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="intro">
+            <p class="eyebrow">IMAGE CLASSIFIER / DEEP LEARNING</p>
+            <h1>What does your image look like?</h1>
+            <p class="lede">Upload an image and let the neural network make its best read.</p>
+        </section>
+
+        <section class="workspace" aria-label="Image prediction tool">
+            <form id="upload-form" class="upload-panel">
+                <label class="dropzone" for="image-input">
+                    <span class="drop-icon">+</span>
+                    <span class="drop-title">Drop an image here</span>
+                    <span class="drop-copy">or click to browse JPG, PNG, WEBP, or AVIF</span>
+                    <input id="image-input" name="image" type="file" accept="image/*" required>
+                </label>
+                <button id="predict-button" type="submit" disabled>Classify image <span>-></span></button>
+            </form>
+
+            <section class="result-panel" aria-live="polite">
+                <div id="empty-state" class="empty-state">
+                    <span class="result-mark">01</span>
+                    <h2>Your result will appear here.</h2>
+                    <p>The model was trained on the included cat versus non-cat dataset.</p>
+                </div>
+                <div id="preview-state" class="preview-state hidden">
+                    <img id="preview-image" alt="Selected image preview">
+                    <div class="result-copy">
+                        <p class="eyebrow">MODEL RESULT</p>
+                        <h2 id="result-label">Waiting...</h2>
+                        <p id="result-confidence"></p>
+                    </div>
+                </div>
+                <p id="status" class="status" role="status"></p>
+            </section>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

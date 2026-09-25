@@ -198,30 +198,38 @@ def L_layer_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 30
     
     return parameters
 
-parameters = L_layer_model(train_x, train_y, layers_dims, num_iterations = 2500, print_cost = True)
+def train_model(num_iterations=2500, print_cost=False):
+    """Load the dataset and train the model once for reuse by the web app."""
+    train_x_orig, train_y, _, _, classes = load_data()
+    num_px = train_x_orig.shape[1]
+    train_x = train_x_orig.reshape(train_x_orig.shape[0], -1).T / 255.0
+    parameters = L_layer_model(
+        train_x,
+        train_y,
+        layers_dims,
+        num_iterations=num_iterations,
+        print_cost=print_cost,
+    )
+    return parameters, classes, num_px
 
-## START CODE HERE ##
-my_image = "butterfly.avif"
-my_label_y = [0]
-## END CODE HERE ##
 
-my_image = "cow.jpg"   
-fname = "images/" + my_image
-image = np.array(Image.open(fname).convert("RGB"))
-resized_image = Image.fromarray(image).resize((num_px, num_px))
-my_image = np.array(resized_image).reshape(
-    (1, num_px * num_px * 3)
-).T
-my_image = my_image / 255.0
+def predict_image(image, parameters, classes, num_px):
+    """Prepare one RGB image and return its predicted class and confidence."""
+    rgb_image = image.convert("RGB")
+    resized_image = rgb_image.resize((num_px, num_px))
+    image_array = np.asarray(resized_image, dtype=np.float64)
+    model_input = image_array.reshape((1, num_px * num_px * 3)).T / 255.0
+    probabilities, _ = L_model_forward(model_input, parameters)
+    prediction = int(probabilities[0, 0] > 0.5)
+    confidence = float(probabilities[0, 0] if prediction else 1 - probabilities[0, 0])
+    label = classes[prediction].decode("utf-8")
+    return label, confidence, rgb_image
 
-my_predicted_image = predict(my_image, my_label_y, parameters)
 
-plt.imshow(image)
-plt.show()
-
-print(
-    "y = " + str(np.squeeze(my_predicted_image)) +
-    ", your L-layer model predicts a \"" +
-    classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +
-    "\" picture."
-)
+if __name__ == "__main__":
+    parameters, classes, num_px = train_model(print_cost=True)
+    image = Image.open(BASE_DIR / "images" / "cow.jpg")
+    label, confidence, image = predict_image(image, parameters, classes, num_px)
+    plt.imshow(image)
+    plt.show()
+    print(f"Prediction: {label} ({confidence:.1%} confidence)")
