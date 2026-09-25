@@ -108,7 +108,7 @@ function App() {
             <div className="result-card"><div className="result-icon"><BrainCircuit size={28} /></div><p className="result-label">Prediction</p><h3>{result.label}</h3><p className="result-status">The model identified this as the most likely class.</p><div className="confidence-row"><span>Confidence</span><strong>{result.confidence.toFixed(1)}%</strong></div><div className="confidence-track"><div style={{ width: `${result.confidence}%` }} /></div><div className="probabilities">{Object.entries(result.probabilities).map(([label, probability]) => <div className="probability" key={label}><div><span>{label}</span><strong>{probability.toFixed(1)}%</strong></div><div className="probability-track"><div style={{ width: `${probability}%` }} /></div></div>)}</div><button className="reset-button" onClick={clearImage}><RotateCcw size={15} /> Analyze another image</button></div>
           </div> : <div className="result-empty"><Sparkles size={21} /><div><h3>Your result will appear here</h3><p>Upload an image and run the model to see its prediction.</p></div></div>}
         </section>
-        <footer><span>NeuraVision / Inference workspace</span><span>Powered by deep learning</span></footer>
+        <footer><span>CatVision V2.0</span><span>Powered by Md Akram Khan</span></footer>
       </div>
     </main>
   );
