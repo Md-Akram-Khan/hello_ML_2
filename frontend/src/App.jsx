@@ -71,7 +71,7 @@ function App() {
       <div className="ambient ambient-one" /><div className="ambient ambient-two" />
       <div className="app-container">
         <header className="topbar">
-          <div className="brand-lockup"><div className="brand-mark"><BrainCircuit size={21} /></div><div><p className="brand-name">NeuraVision</p><p className="brand-subtitle">Deep Neural Network Classifier</p></div></div>
+          <div className="brand-lockup"><div className="brand-mark"><BrainCircuit size={21} /></div><div><p className="brand-name">CatVision V2.0</p><p className="brand-subtitle">Cat Classifier using Deep Neural Network</p></div></div>
           <div className="header-status"><span className={`status-dot ${serviceStatus}`} />{statusLabel}</div>
         </header>
 
