@@ -78,7 +78,7 @@ function App() {
         <section className="hero-copy">
           <div className="eyebrow"><Sparkles size={14} /> Neural inference, made clear</div>
           <h1>See what your image<br /><span>is telling you.</span></h1>
-          <p>Upload an image and let the deep neural network produce a prediction with confidence scores for every class.</p>
+          <p>Upload an image and let the linear regression model produce a prediction with confidence scores for every class.</p>
         </section>
 
         <section className="workspace-grid">
