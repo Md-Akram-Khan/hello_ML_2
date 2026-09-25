@@ -6,11 +6,17 @@ export async function checkHealth() {
   return response.json();
 }
 
-export async function predictImage(file) {
+export async function classifyImage(file) {
   const body = new FormData();
   body.append("file", file);
   const response = await fetch(`${API_URL}/predict`, { method: "POST", body });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || "Prediction failed.");
-  return data;
+  return {
+    label: data.prediction,
+    confidence: data.confidence * 100,
+    probabilities: Object.fromEntries(
+      Object.entries(data.probabilities).map(([label, probability]) => [label, probability * 100]),
+    ),
+  };
 }
